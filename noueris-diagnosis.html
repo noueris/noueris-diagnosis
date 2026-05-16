@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOUQUET DIAGNOSIS — NOUÉRIS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Josefin+Sans:wght@100;200;300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --off-white: #f2ede8;
+    --warm-white: #e8e0d8;
+    --burgundy: #5c1a1a;
+    --burgundy-light: #8b2a2a;
+    --gold: #9a8060;
+    --gray: #3a3a3a;
+    --gray-light: #6a6a6a;
+    --border: #2a2a2a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--off-white);
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 200;
+    letter-spacing: 0.08em;
+    min-height: 100vh;
+    cursor: default;
+  }
+
+  /* OPENING SCREEN */
+  #opening {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #opening::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+      radial-gradient(ellipse at 20% 50%, rgba(92,26,26,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(154,128,96,0.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .opening-brand {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 100;
+    font-size: 11px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.3s;
+  }
+
+  .opening-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(42px, 8vw, 80px);
+    letter-spacing: 0.15em;
+    text-align: center;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.6s;
+  }
+
+  .opening-title em {
+    font-style: italic;
+    color: var(--warm-white);
+  }
+
+  .opening-subtitle {
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 100;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--gray-light);
+    margin-bottom: 80px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.9s;
+  }
+
+  .opening-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--warm-white);
+    text-align: center;
+    max-width: 480px;
+    line-height: 2;
+    margin-bottom: 80px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 1.2s;
+  }
+
+  .opening-meta {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gray-light);
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 1.4s;
+  }
+
+  .btn-start {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 200;
+    font-size: 11px;
+    letter-spacing: 0.5em;
+    padding: 18px 60px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 1.6s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-start::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: var(--gold);
+    transition: left 0.4s ease;
+    z-index: -1;
+  }
+
+  .btn-start:hover {
+    color: var(--black);
+  }
+
+  .btn-start:hover::before {
+    left: 0;
+  }
+
+  /* PROGRESS */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 1px;
+    background: var(--gold);
+    transition: width 0.4s ease;
+    z-index: 100;
+  }
+
+  /* QUESTION SCREEN */
+  #quiz {
+    display: none;
+    min-height: 100vh;
+    padding: 80px 40px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 80px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .quiz-brand {
+    font-size: 10px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    font-weight: 100;
+  }
+
+  .quiz-counter {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gray-light);
+  }
+
+  .block-label {
+    font-size: 9px;
+    letter-spacing: 0.5em;
+    color: var(--burgundy-light);
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .question-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--off-white);
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.1s;
+  }
+
+  .scale-container {
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.2s;
+  }
+
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .scale-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--gray-light);
+  }
+
+  .scale-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .scale-btn {
+    width: 52px;
+    height: 52px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--gray-light);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .scale-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .scale-btn.selected {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--black);
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 60px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.3s;
+  }
+
+  .btn-nav {
+    background: transparent;
+    border: none;
+    color: var(--gray-light);
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 200;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 10px 0;
+  }
+
+  .btn-nav:hover { color: var(--off-white); }
+  .btn-nav:disabled { opacity: 0.2; cursor: default; }
+
+  .btn-next {
+    background: transparent;
+    border: 1px solid var(--off-white);
+    color: var(--off-white);
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 200;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    cursor: pointer;
+    padding: 14px 40px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-next:hover {
+    background: var(--off-white);
+    color: var(--black);
+  }
+
+  .btn-next:disabled {
+    opacity: 0.2;
+    cursor: default;
+  }
+
+  /* RESULT SCREEN */
+  #result {
+    display: none;
+    min-height: 100vh;
+    padding: 80px 40px;
+    max-width: 720px;
+    margin: 0 auto;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+  }
+
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 80px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-brand {
+    font-size: 10px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    font-weight: 100;
+  }
+
+  .result-label {
+    font-size: 9px;
+    letter-spacing: 0.5em;
+    color: var(--burgundy-light);
+    margin-bottom: 20px;
+  }
+
+  .result-type-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(56px, 10vw, 100px);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .result-subtype {
+    font-size: 11px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .result-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--warm-white);
+    margin-bottom: 60px;
+  }
+
+  .result-divider {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin-bottom: 40px;
+  }
+
+  .result-tagline {
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .result-catch {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.8;
+    color: var(--off-white);
+    margin-bottom: 40px;
+  }
+
+  .result-analysis {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    line-height: 2;
+    color: var(--warm-white);
+    margin-bottom: 40px;
+    padding: 30px;
+    border-left: 1px solid var(--burgundy-light);
+  }
+
+  .result-advice-label {
+    font-size: 9px;
+    letter-spacing: 0.5em;
+    color: var(--gray-light);
+    margin-bottom: 16px;
+  }
+
+  .result-advice {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    line-height: 2;
+    color: var(--warm-white);
+    margin-bottom: 80px;
+  }
+
+  .result-dream {
+    padding: 40px;
+    border: 1px solid var(--border);
+    margin-bottom: 60px;
+    position: relative;
+  }
+
+  .result-dream::before {
+    content: 'YOUR DREAM';
+    position: absolute;
+    top: -6px;
+    left: 30px;
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    background: var(--black);
+    padding: 0 10px;
+  }
+
+  .result-dream-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    line-height: 2;
+    color: var(--off-white);
+  }
+
+  .result-cta {
+    text-align: center;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+
+  .result-cta-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--gray-light);
+    margin-bottom: 30px;
+  }
+
+  .btn-retry {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--gray-light);
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 200;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    cursor: pointer;
+    padding: 14px 40px;
+    transition: all 0.3s ease;
+    margin-right: 16px;
+  }
+
+  .btn-retry:hover {
+    border-color: var(--off-white);
+    color: var(--off-white);
+  }
+
+  .btn-contact {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 200;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    cursor: pointer;
+    padding: 14px 40px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-contact:hover {
+    background: var(--gold);
+    color: var(--black);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .fade-question {
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  @media (max-width: 600px) {
+    #opening, #quiz, #result { padding: 60px 24px; }
+    .scale-btn { width: 44px; height: 44px; font-size: 16px; }
+    .scale-buttons { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar" style="width:0%"></div>
+
+<!-- OPENING -->
+<div id="opening">
+  <div class="opening-brand">NOUÉRIS</div>
+  <div class="opening-title">BOUQUET<br><em>Diagnosis</em></div>
+  <div class="opening-subtitle">YOUR BOUQUET STYLE FINDER</div>
+  <div class="opening-desc">
+    あなたが叶えたい結婚式の夢から、<br>
+    あなただけのブーケスタイルを導き出します。
+  </div>
+  <div class="opening-meta">18 QUESTIONS — 16 TYPES</div>
+  <button class="btn-start" onclick="startQuiz()">BEGIN</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz">
+  <div class="quiz-header">
+    <div class="quiz-brand">NOUÉRIS</div>
+    <div class="quiz-counter" id="counter">01 / 24</div>
+  </div>
+  <div class="block-label" id="block-label">A — 式当日の光景</div>
+  <div class="question-text" id="question-text"></div>
+  <div class="scale-container">
+    <div class="scale-labels">
+      <span class="scale-label">全くそう思わない</span>
+      <span class="scale-label">とてもそう思う</span>
+    </div>
+    <div class="scale-buttons" id="scale-buttons">
+      <button class="scale-btn" onclick="selectAnswer(1)">1</button>
+      <button class="scale-btn" onclick="selectAnswer(2)">2</button>
+      <button class="scale-btn" onclick="selectAnswer(3)">3</button>
+      <button class="scale-btn" onclick="selectAnswer(4)">4</button>
+      <button class="scale-btn" onclick="selectAnswer(5)">5</button>
+    </div>
+  </div>
+  <div class="nav-buttons">
+    <button class="btn-nav" id="btn-prev" onclick="prevQuestion()">← BACK</button>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()" disabled>NEXT →</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="result">
+  <div class="result-header">
+    <div class="result-brand">NOUÉRIS</div>
+    <div style="font-size:10px;letter-spacing:0.3em;color:var(--gray-light)">YOUR RESULT</div>
+  </div>
+  <div class="result-label">YOUR BOUQUET TYPE</div>
+  <div class="result-type-name" id="result-type"></div>
+  <div class="result-subtype" id="result-subtype"></div>
+  <div class="result-subtitle" id="result-subtitle"></div>
+  <div class="result-divider"></div>
+  <div class="result-tagline">ONE LINE</div>
+  <div class="result-catch" id="result-catch"></div>
+  <div class="result-analysis" id="result-analysis"></div>
+  <div class="result-advice-label">BOUQUET ADVICE</div>
+  <div class="result-advice" id="result-advice"></div>
+  <div class="result-dream" id="result-dream-box">
+    <div class="result-dream-text" id="result-dream"></div>
+  </div>
+  <div class="result-cta">
+    <div class="result-cta-text">あなたのブーケを、一緒に作りましょう。</div>
+    <button class="btn-retry" onclick="retryQuiz()">RETRY</button>
+    <button class="btn-contact">CONTACT NOUÉRIS</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // A block (4問: A4削除)
+  { block: 'A — 式当日の光景', text: '式当日、自分が部屋に入った瞬間に場の雰囲気が変わることを想像するとわくわくする' },
+  { block: 'A — 式当日の光景', text: '華やかさより、静かな美しさのある式にしたいと思う' },
+  { block: 'A — 式当日の光景', text: '式全体のトーンは、装飾を絞った凛とした空間にしたい' },
+  { block: 'A — 式当日の光景', text: '式の雰囲気は、自然や季節を感じるような温かみのあるものにしたい' },
+  // B block (4問: B5削除)
+  { block: 'B — ブーケ・美意識', text: 'ブーケは、花が自然に咲き広がるような、動きのあるデザインに惹かれる' },
+  { block: 'B — ブーケ・美意識', text: 'ブーケや装飾は、多く飾るより少数を際立たせる方が美しいと思う' },
+  { block: 'B — ブーケ・美意識', text: 'ブーケを選ぶとき、色よりも形やシルエットを重視したいと思う' },
+  { block: 'B — ブーケ・美意識', text: '深みのある色や、くすんだトーンのブーケに美しさを感じる' },
+  // C block (3問: C2削除)
+  { block: 'C — ゲストへの印象', text: '式が終わったあと、「あの花嫁さん、なんか忘れられない」と言われたい' },
+  { block: 'C — ゲストへの印象', text: '式の写真をゲストが見返したとき、息をのむような一枚があってほしい' },
+  { block: 'C — ゲストへの印象', text: '式に来てくれたゲストに、「こんな結婚式は初めて見た」と思われたい' },
+  // D block (2問: D2・D3・D4削除)
+  { block: 'D — 式後の自分', text: '式が終わったあと、これが私だったと、迷いなく言える式にしたい' },
+  { block: 'D — 式後の自分', text: '自分のブーケを見たゲストが、思わず写真を撮りたくなるような式にしたい' },
+  // E block (5問: そのまま)
+  { block: 'E — 選択のスタイル', text: 'ブーケを選ぶとき、最初に「これだ」と感じたものをそのまま選ぶ方だと思う' },
+  { block: 'E — 選択のスタイル', text: '結婚式の準備は、時間をかけてじっくり納得してから決めたいと思う' },
+  { block: 'E — 選択のスタイル', text: '自分の選択に迷ったとき、データや情報より自分の感覚を信じる方だと思う' },
+  { block: 'E — 選択のスタイル', text: '結婚式の準備で、直感で決めたものほど後悔しないと思う' },
+  { block: 'E — 選択のスタイル', text: 'ブーケや装飾を選ぶとき、他の人の意見より自分の感覚を優先したいと思う' },
+];
+
+// axis1: 高=空気を変えたい(SPARK/REIGN) 低=心に残りたい(ECHO/STILL)
+// axis2: 高=凛とした美(STILL/REIGN) 低=柔らかい美(ECHO/SPARK)
+// axis3: 高=熟考(POISE) 低=直感(PULSE)
+const scoring = [
+  { axis: 1, reverse: false }, // A1
+  { axis: 1, reverse: true  }, // A2
+  { axis: 2, reverse: false }, // A3
+  { axis: 2, reverse: true  }, // A4
+  { axis: 2, reverse: true  }, // B1
+  { axis: 2, reverse: false }, // B2
+  { axis: 2, reverse: false }, // B3
+  { axis: 1, reverse: true  }, // B4
+  { axis: 1, reverse: true  }, // C1
+  { axis: 1, reverse: false }, // C2
+  { axis: 1, reverse: false }, // C3
+  { axis: 2, reverse: false }, // D1
+  { axis: 1, reverse: false }, // D2
+  { axis: 3, reverse: true  }, // E1
+  { axis: 3, reverse: false }, // E2
+  { axis: 3, reverse: true  }, // E3
+  { axis: 3, reverse: true  }, // E4
+  { axis: 3, reverse: true  }, // E5
+];
+
+const types = {
+  'ECHO-PULSE': {
+    type: 'ECHO', sub: 'PULSE', subtitle: '余韻の花嫁',
+    catch: '触れずに、心に残る花嫁',
+    analysis: '自分から主張しない。でもその場を離れたあと、なぜかずっと頭に残っている。そんな静かで深い存在感を、直感で選んだものたちが自然に作り出します。柔らかく流れるような美しさの中に、言葉にならない何かが宿っています。',
+    advice: '理由を考えすぎず、最初に手が伸びたものを信じてください。その選択が一番あなたらしくなります。',
+    dream: '式が終わったあと、「なんか、あの花嫁さん忘れられないね」と誰かがぽつりと言う。ずっと目で追っていた。そんな式にしたい。'
+  },
+  'ECHO-POISE': {
+    type: 'ECHO', sub: 'POISE', subtitle: '余韻の花嫁',
+    catch: '時間をかけて、静かに完成させる花嫁',
+    analysis: 'じっくり考えて選ぶからこそ、選んだものへの確信が深い。柔らかく有機的な美しさを好みながら、その中に自分だけの美意識が宿っています。華やかさより余韻を大切にする、知的な美しさの持ち主です。',
+    advice: '候補をひとつに絞らず、並べて時間をかけて見てください。じっくり見続けても飽きないものが、あなたの答えです。',
+    dream: '式が終わったあと、「なんか、あの花嫁さん忘れられないね」と誰かがぽつりと言う。ずっと目で追っていた。そんな式にしたい。'
+  },
+  'STILL-PULSE': {
+    type: 'STILL', sub: 'PULSE', subtitle: '静凪の花嫁',
+    catch: '研ぎ澄まされた直感を持つ花嫁',
+    analysis: '凛とした美しさに惹かれながら、選ぶ瞬間は直感に従う。理論より感覚で「これしかない」と決められる強さがあります。無駄を削ぎ落とした美しさの中に、自分らしさを見つけるタイプです。',
+    advice: '迷ったら削ってください。引き算した先に残ったものが、あなたの本当の美意識です。',
+    dream: '式の写真を見るたびに、これが自分だと思える。そういう一日にしたい。余白と静けさの中に、自分の全部が宿っていた式。'
+  },
+  'STILL-POISE': {
+    type: 'STILL', sub: 'POISE', subtitle: '静凪の花嫁',
+    catch: '自分の美意識を言語化できる花嫁',
+    analysis: 'なぜ美しいかを説明できる。凛とした構築的な美しさを好み、選択の理由を丁寧に積み上げていくタイプです。式全体に自分の美意識が一貫して宿っている、そんな完成度の高い式にしたいと思っています。',
+    advice: '余白や間を意識して選んでください。引きすぎず、でも足しすぎない。そのバランスを見極められるのはあなただけです。',
+    dream: '式の写真を見るたびに、これが自分だと思える。そういう一日にしたい。余白と静けさの中に、自分の全部が宿っていた式。'
+  },
+  'SPARK-PULSE': {
+    type: 'SPARK', sub: 'PULSE', subtitle: '記憶の花嫁',
+    catch: '場を瞬時に変える、感覚の花嫁',
+    analysis: '入場した瞬間、何かが変わる。それはあなたが直感で選んだものたちが、自然に放つ存在感のせいです。深みのある色や流れるような美しさに惹かれ、計算せずとも人の記憶に刻まれる花嫁です。',
+    advice: '深い色や動きのあるデザインの中から、息をのんだ瞬間のものを選んでください。その感覚があなたの存在感を最大限に引き出します。',
+    dream: '入場した瞬間、自分の存在で会場の空気が変わるのを感じたい。深い色と存在感で、式が終わっても頭から離れないと言われたい。'
+  },
+  'SPARK-POISE': {
+    type: 'SPARK', sub: 'POISE', subtitle: '記憶の花嫁',
+    catch: '深く考えた末に、場を圧倒する花嫁',
+    analysis: '存在感は、細部への執着から生まれると知っています。柔らかく流れるような美しさを好みながら、色・形・素材のすべてに自分なりの答えを持っている。式が終わったあと、あの花嫁のブーケだけが、鮮明に目に焼きついていると言われるタイプです。',
+    advice: '一目惚れより、持ち続けても飽きないものを選んでください。時間をかけて選んだブーケほど、写真を見返すたびに正解だったと思えます。',
+    dream: '入場した瞬間、自分の存在で会場の空気が変わるのを感じたい。深い色と存在感で、式が終わっても頭から離れないと言われたい。'
+  },
+  'REIGN-PULSE': {
+    type: 'REIGN', sub: 'PULSE', subtitle: '唯一の花嫁',
+    catch: '圧倒的な美しさを直感でつかむ花嫁',
+    analysis: '誰も見たことのない美しさを、理屈なく選び取れる。構築的で凛とした美しさに惹かれながら、その選択は常に直感から始まります。式当日、会場にいた全員の記憶にあなただけが残る、そんな花嫁です。',
+    advice: '他の人が選ばないものを恐れないでください。その大胆さがあなたの圧倒的な美しさになります。',
+    dream: '圧倒的だった、とあとから言われる式にしたい。美しさに息をのんで、それが自分だったと胸を張れる一日。'
+  },
+  'REIGN-POISE': {
+    type: 'REIGN', sub: 'POISE', subtitle: '唯一の花嫁',
+    catch: '完璧を積み上げて、唯一になる花嫁',
+    analysis: '圧倒的な美しさは偶然ではなく、選び抜かれた選択の集積だと知っています。構築的で凛とした美しさを好み、すべての選択に一切の妥協がない。式全体が、あなたの美意識の完全な表現になります。',
+    advice: '最後まで迷い続けてください。その迷いの先に選んだものだけが、唯一無二のブーケになります。',
+    dream: '圧倒的だった、とあとから言われる式にしたい。美しさに息をのんで、それが自分だったと胸を張れる一日。'
+  },
+};
+
+let currentQ = 0;
+let answers = new Array(18).fill(null);
+
+function startQuiz() {
+  document.getElementById('opening').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const blockLabel = document.getElementById('block-label');
+  const questionText = document.getElementById('question-text');
+  const counter = document.getElementById('counter');
+  const btnNext = document.getElementById('btn-next');
+  const btnPrev = document.getElementById('btn-prev');
+
+  // Reset animation
+  blockLabel.style.animation = 'none';
+  questionText.style.animation = 'none';
+  setTimeout(() => {
+    blockLabel.style.animation = '';
+    questionText.style.animation = '';
+  }, 10);
+
+  blockLabel.textContent = q.block;
+  questionText.textContent = q.text;
+  counter.textContent = String(currentQ + 1).padStart(2, '0') + ' / 18';
+
+  // Update scale buttons
+  const btns = document.querySelectorAll('.scale-btn');
+  btns.forEach((btn, i) => {
+    btn.classList.toggle('selected', answers[currentQ] === i + 1);
+  });
+
+  btnNext.disabled = answers[currentQ] === null;
+  btnPrev.disabled = currentQ === 0;
+
+  // Progress bar
+  const progress = (currentQ / 18) * 100;
+  document.getElementById('progress-bar').style.width = progress + '%';
+}
+
+function selectAnswer(val) {
+  answers[currentQ] = val;
+  const btns = document.querySelectorAll('.scale-btn');
+  btns.forEach((btn, i) => {
+    btn.classList.toggle('selected', i + 1 === val);
+  });
+  document.getElementById('btn-next').disabled = false;
+}
+
+function nextQuestion() {
+  if (answers[currentQ] === null) return;
+  if (currentQ < 17) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  }
+}
+
+function calculateResult() {
+  let axis1 = 0, axis2 = 0, axis3 = 0;
+
+  answers.forEach((ans, i) => {
+    const s = scoring[i];
+    const score = s.reverse ? (6 - ans) : ans;
+    if (s.axis === 1) axis1 += score;
+    else if (s.axis === 2) axis2 += score;
+    else if (s.axis === 3) axis3 += score;
+  });
+
+  // axis1: 6問 max30 中央値15
+  // axis2: 6問 max30 中央値15
+  // axis3: 5問 max25 中央値12.5
+  const type1 = axis1 >= 16 ? 'SPARK-REIGN' : 'ECHO-STILL';
+  const type2 = axis2 >= 16 ? 'STILL-REIGN' : 'ECHO-SPARK';
+  const subtype = axis3 >= 13 ? 'POISE' : 'PULSE';
+
+  let mainType;
+  if (type1 === 'ECHO-STILL' && type2 === 'ECHO-SPARK') mainType = 'ECHO';
+  else if (type1 === 'ECHO-STILL' && type2 === 'STILL-REIGN') mainType = 'STILL';
+  else if (type1 === 'SPARK-REIGN' && type2 === 'ECHO-SPARK') mainType = 'SPARK';
+  else mainType = 'REIGN';
+
+  return types[`${mainType}-${subtype}`];
+}
+
+function showResult() {
+  document.getElementById('quiz').style.display = 'none';
+  const result = calculateResult();
+  document.getElementById('result-type').textContent = result.type;
+  document.getElementById('result-subtype').textContent = '— ' + result.sub + ' —';
+  document.getElementById('result-subtitle').textContent = result.subtitle;
+  document.getElementById('result-catch').textContent = result.catch;
+  document.getElementById('result-analysis').textContent = result.analysis;
+  document.getElementById('result-advice').textContent = result.advice;
+  document.getElementById('result-dream').textContent = result.dream;
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('progress-bar').style.width = '100%';
+  window.scrollTo(0, 0);
+}
+
+function retryQuiz() {
+  currentQ = 0;
+  answers = new Array(18).fill(null);
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('opening').style.display = 'flex';
+  document.getElementById('progress-bar').style.width = '0%';
+}
+</script>
+</body>
+</html>
